@@ -7,6 +7,7 @@ import { path } from 'app-root-path';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AnimeScheduleModule } from './anime/schedule/anime.schedule.module';
 import { AnimeModule } from './anime/anime.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AnimeModule } from './anime/anime.module';
       serveRoot: '/uploads',
     }),
     AnimeModule,
+    FileModule,
     AnimeScheduleModule,
   ],
   providers: [],

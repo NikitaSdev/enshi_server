@@ -1,6 +1,11 @@
 import { ConfigService } from '@nestjs/config';
 import { SequelizeModuleOptions } from '@nestjs/sequelize';
-import { Anime, Episode, Season } from 'src/anime/anime.model';
+import { Anime } from 'src/anime/models.ts/anime.model';
+import { Favourite, FavouriteAnime } from 'src/anime/models.ts/favourite.model';
+import { Genre, GenreAnime } from 'src/anime/models.ts/genre.model';
+import { MaterialData } from 'src/anime/models.ts/material-data.model';
+import { User } from 'src/anime/models.ts/user.model';
+import { Viewed, ViewedAnime } from 'src/anime/models.ts/viewed.model';
 
 export const postgresConfig = async (
   configService: ConfigService,
@@ -12,5 +17,15 @@ export const postgresConfig = async (
   password: configService.get<string>('POSTGRES_PASSWORD'),
   database: configService.get<string>('POSTGRES_DB'),
   autoLoadModels: true,
-  models: [Anime, Episode, Season],
+  models: [
+    Anime,
+    MaterialData,
+    User,
+    Viewed,
+    ViewedAnime,
+    Favourite,
+    FavouriteAnime,
+    Genre,
+    GenreAnime,
+  ],
 });

@@ -1,18 +1,23 @@
 import {
-  Model,
+  BelongsToMany,
   Column,
-  Table,
   DataType,
-  HasMany,
-  BelongsTo,
   ForeignKey,
-  Index,
+  HasMany,
   HasOne,
+  Index,
+  Model,
+  Table,
 } from 'sequelize-typescript';
+
+import { MaterialData } from './material-data.model';
+import { FavouriteAnime } from './favourite.model';
+import { ViewedAnime } from './viewed.model';
+import { Genre, GenreAnime } from './genre.model';
 
 @Table({ tableName: 'Anime' })
 export class Anime extends Model<Anime> {
-  @Column({ type: DataType.BIGINT, primaryKey: true, autoIncrement: true })
+  @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
   anime_id: number;
 
   @Index('anime_id_index')
@@ -32,12 +37,14 @@ export class Anime extends Model<Anime> {
   @Column({ type: DataType.STRING, allowNull: true })
   title_orig: string;
 
+  @Index('anime_other_index')
   @Column({ type: DataType.STRING, allowNull: true })
   other_title: string;
 
   @Column({ type: DataType.JSONB, allowNull: true })
   translation: { id: number; title: string; type: string };
 
+  @Index('anime_year_index')
   @Column({ type: DataType.INTEGER, allowNull: true })
   year: number;
 
@@ -80,78 +87,43 @@ export class Anime extends Model<Anime> {
   created_at: Date;
   updated_at: Date;
 
-  @HasMany(() => Season)
-  seasons: Season[];
-
   @Column({ type: DataType.JSONB, allowNull: true })
-  material_data: {
-    title: string;
-    anime_title: string;
-    title_en: string;
-    other_titles: string[];
-    other_titles_en: string[];
-    other_titles_jp: string[];
-    anime_kind: string;
-    all_status: string;
-    anime_status: string;
-    year: number;
-    description: string;
-    poster_url: string;
-    screenshots: string[];
-    duration: number;
-    countries: string[];
-    all_genres: string[];
-    genres: string[];
-    anime_genres: string[];
-    anime_studios: string[];
-    kinopoisk_rating: number;
-    kinopoisk_votes: number;
-    imdb_rating: number;
-    imdb_votes: number;
-    shikimori_rating: number;
-    shikimori_votes: number;
-    premiere_world: string;
-    aired_at: Date;
-    next_episode_at: Date;
-    rating_mpaa: string;
-    episodes_total: number;
-    episodes_aired: number;
-    actors: string[];
-    directors: string[];
-    producers: string[];
-    writers: string[];
-    composers: string[];
-    editors: string[];
-    designers: string[];
-    operators: string[];
+  seasons: {
+    [season_key: string]: {
+      link: string;
+      episodes: {
+        [episode_key: string]: string;
+      };
+    };
   };
-}
 
-@Table({ tableName: 'Season' })
-export class Season extends Model<Season> {
-  @ForeignKey(() => Anime)
-  @Column({ type: DataType.BIGINT })
-  animeId: number;
+  @HasOne(() => MaterialData)
+  material_data: MaterialData;
 
-  @Column({ type: DataType.STRING })
-  link: string;
+  @Column({ type: DataType.BOOLEAN, allowNull: true })
+  blocked: boolean;
 
-  @BelongsTo(() => Anime)
-  anime: Anime;
+  @Column({ type: DataType.FLOAT, allowNull: true })
+  rating: number;
 
-  @HasMany(() => Episode)
-  episodes: Episode[];
-}
+  @Column({ type: DataType.BOOLEAN, allowNull: true, defaultValue: false })
+  top: boolean;
 
-@Table({ tableName: 'Episode' })
-export class Episode extends Model<Episode> {
-  @ForeignKey(() => Season)
-  @Column({ type: DataType.BIGINT })
-  seasonId: number;
+  @Column({ type: DataType.INTEGER, allowNull: true, defaultValue: -1 })
+  top_order: number;
 
-  @BelongsTo(() => Season)
-  season: Season;
+  @Column({ type: DataType.BOOLEAN, allowNull: true, defaultValue: false })
+  popular: boolean;
 
-  @Column
-  link: string;
+  @Column({ type: DataType.INTEGER, allowNull: true, defaultValue: -1 })
+  popular_order: number;
+
+  @HasMany(() => FavouriteAnime)
+  favouriteAnime: FavouriteAnime[];
+
+  @HasMany(() => ViewedAnime)
+  viewedAnime: ViewedAnime[];
+
+  @BelongsToMany(() => Genre, () => GenreAnime)
+  public genres: Genre[];
 }
