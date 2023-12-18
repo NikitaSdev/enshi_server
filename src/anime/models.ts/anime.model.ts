@@ -100,7 +100,7 @@ export class Anime extends Model<Anime> {
   @HasOne(() => MaterialData)
   material_data: MaterialData;
 
-  @Column({ type: DataType.BOOLEAN, allowNull: true })
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
   blocked: boolean;
 
   @Column({ type: DataType.FLOAT, allowNull: true })
@@ -125,5 +125,5 @@ export class Anime extends Model<Anime> {
   viewedAnime: ViewedAnime[];
 
   @BelongsToMany(() => Genre, () => GenreAnime)
-  public genres: Genre[];
+  genres: Genre[];
 }

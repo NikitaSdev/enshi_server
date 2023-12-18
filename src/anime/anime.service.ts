@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Anime } from './models.ts/anime.model';
 import { MaterialData } from './models.ts/material-data.model';
 import { Genre, GenreAnime } from './models.ts/genre.model';
+import { Op } from 'sequelize';
 
 interface kodikParseInterface {
   total: number;
@@ -19,6 +20,24 @@ export class AnimeService {
     @InjectModel(Genre) private GenreModel: typeof Genre,
     @InjectModel(GenreAnime) private GenreAnimeModel: typeof GenreAnime,
   ) {}
+  private async setRating(anime: Anime, material_data: MaterialData) {
+    const { imdb_rating, kinopoisk_rating, shikimori_rating } = material_data;
+
+    const definedRatings = [
+      imdb_rating,
+      kinopoisk_rating,
+      shikimori_rating,
+    ].filter(
+      (rate) => rate !== null && rate !== undefined && !isNaN(Number(rate)),
+    );
+
+    const rating =
+      definedRatings.reduce((sum, rating) => sum + Number(rating), 0) /
+      definedRatings.length;
+
+    anime.rating = parseFloat(rating.toFixed(2));
+    await anime.save();
+  }
   public async parseAnime() {
     const BASE_URL = process.env.KODIK_API_URL;
     const KODIK_TOKEN = process.env.KODIK_API_KEY;
@@ -48,7 +67,7 @@ export class AnimeService {
         for (const anime of results) {
           const existingAnime = await this.AnimeModel.findOne({
             where: {
-              id: anime.id,
+              [Op.or]: [{ id: anime.id }, { title: anime.title }],
             },
           });
 
@@ -59,6 +78,7 @@ export class AnimeService {
                 anime_id: existingAnime.anime_id,
               },
             });
+            await this.setRating(existingAnime, materialDataExists);
             if (materialDataExists) {
               await materialDataExists.update(anime.material_data);
             } else {
@@ -82,19 +102,20 @@ export class AnimeService {
             }
 
             continue;
+          } else {
+            const newAnime = await this.AnimeModel.create(anime);
+
+            await this.GenreAnimeModel.create({
+              genre_id: newGenre.id,
+              anime_id: newAnime.anime_id,
+            });
+
+            const material_data = await this.MaterialDataModel.create({
+              anime_id: newAnime.anime_id,
+              ...anime.material_data,
+            });
+            await this.setRating(newAnime, material_data);
           }
-
-          const newAnime = await this.AnimeModel.create(anime);
-
-          await this.GenreAnimeModel.create({
-            genre_id: newGenre.id,
-            anime_id: newAnime.anime_id,
-          });
-
-          await this.MaterialDataModel.create({
-            anime_id: newAnime.anime_id,
-            ...anime.material_data,
-          });
         }
 
         nextPage = next_page;
