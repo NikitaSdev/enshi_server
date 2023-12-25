@@ -125,5 +125,5 @@ export class Anime extends Model<Anime> {
   viewedAnime: ViewedAnime[];
 
   @BelongsToMany(() => Genre, () => GenreAnime)
-  genres: Genre[];
+  public genres: Genre[];
 }

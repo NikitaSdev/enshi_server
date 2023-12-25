@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import axios from 'axios';
 import { Anime } from './models.ts/anime.model';
 import { MaterialData } from './models.ts/material-data.model';
-import { Genre, GenreAnime } from './models.ts/genre.model';
+import { Genre, GenreAnime, _AnimeToGenre } from './models.ts/genre.model';
 import { Op } from 'sequelize';
 
 interface kodikParseInterface {
@@ -19,6 +19,8 @@ export class AnimeService {
     @InjectModel(MaterialData) private MaterialDataModel: typeof MaterialData,
     @InjectModel(Genre) private GenreModel: typeof Genre,
     @InjectModel(GenreAnime) private GenreAnimeModel: typeof GenreAnime,
+    @InjectModel(_AnimeToGenre)
+    private _AnimeToGenreModel: typeof _AnimeToGenre,
   ) {}
   private async setRating(anime: Anime, material_data: MaterialData) {
     const { imdb_rating, kinopoisk_rating, shikimori_rating } = material_data;
@@ -51,6 +53,7 @@ export class AnimeService {
           title: genre.title,
         },
         defaults: {
+          title: genre.title,
           count: genre.count,
         },
       });
@@ -88,19 +91,6 @@ export class AnimeService {
               });
             }
 
-            const genreAnimeExsits = await this.GenreAnimeModel.findOne({
-              where: {
-                genre_id: newGenre.id,
-                anime_id: existingAnime.anime_id,
-              },
-            });
-            if (!genreAnimeExsits) {
-              await this.GenreAnimeModel.create({
-                genre_id: newGenre.id,
-                anime_id: existingAnime.anime_id,
-              });
-            }
-
             continue;
           } else {
             const newAnime = await this.AnimeModel.create(anime);
@@ -109,7 +99,10 @@ export class AnimeService {
               genre_id: newGenre.id,
               anime_id: newAnime.anime_id,
             });
-
+            await this._AnimeToGenreModel.create({
+              B: newGenre.id,
+              A: newAnime.anime_id,
+            });
             const material_data = await this.MaterialDataModel.create({
               anime_id: newAnime.anime_id,
               ...anime.material_data,

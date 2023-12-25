@@ -7,7 +7,7 @@ import { Anime } from './models.ts/anime.model';
 import { User } from './models.ts/user.model';
 import { Viewed, ViewedAnime } from './models.ts/viewed.model';
 import { Favourite, FavouriteAnime } from './models.ts/favourite.model';
-import { Genre, GenreAnime } from './models.ts/genre.model';
+import { Genre, GenreAnime, _AnimeToGenre } from './models.ts/genre.model';
 
 @Module({
   providers: [AnimeService],
@@ -23,6 +23,7 @@ import { Genre, GenreAnime } from './models.ts/genre.model';
       FavouriteAnime,
       GenreAnime,
       Genre,
+      _AnimeToGenre,
     ]),
   ],
 })

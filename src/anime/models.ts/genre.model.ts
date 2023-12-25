@@ -10,23 +10,8 @@ import {
 
 import { Anime } from './anime.model';
 
-@Table({ tableName: 'Genre' })
-export class Genre extends Model<Genre> {
-  @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
-  id: number;
-  @Index('genre-title-index')
-  @Column({ type: DataType.STRING })
-  title: string;
-  @Column({ type: DataType.INTEGER })
-  count: number;
-  @BelongsToMany(() => Anime, () => GenreAnime)
-  anime: GenreAnime[];
-}
-
 @Table({ tableName: 'GenreAnime' })
 export class GenreAnime extends Model<GenreAnime> {
-  @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
-  id: number;
   @ForeignKey(() => Genre)
   @Column({ type: DataType.INTEGER })
   public genre_id: number;
@@ -34,4 +19,26 @@ export class GenreAnime extends Model<GenreAnime> {
   @ForeignKey(() => Anime)
   @Column({ type: DataType.INTEGER })
   public anime_id: number;
+}
+
+@Table({ tableName: '_AnimeToGenre' })
+export class _AnimeToGenre extends Model<_AnimeToGenre> {
+  @Column({ type: DataType.INTEGER })
+  public B: number;
+
+  @Column({ type: DataType.INTEGER })
+  public A: number;
+}
+
+@Table({ tableName: 'Genre' })
+export class Genre extends Model<Genre> {
+  @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
+  public id: number;
+  @Index('genre-title-index')
+  @Column({ type: DataType.STRING })
+  public title: string;
+  @Column({ type: DataType.INTEGER })
+  public count: number;
+  @BelongsToMany(() => Anime, () => GenreAnime)
+  public anime: Anime[];
 }
