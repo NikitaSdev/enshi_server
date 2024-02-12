@@ -6,6 +6,8 @@ export class HomeSlider extends Model<HomeSlider> {
   id: number;
   @Column({ type: DataType.STRING })
   image_url: string;
+  @Column({ type: DataType.STRING })
+  preview_image_url: string;
   @Column({ type: DataType.INTEGER })
   season: number;
   @Column({ type: DataType.INTEGER })

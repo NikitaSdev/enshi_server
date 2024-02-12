@@ -23,6 +23,9 @@ export class GenreAnime extends Model<GenreAnime> {
 
 @Table({ tableName: '_AnimeToGenre' })
 export class _AnimeToGenre extends Model<_AnimeToGenre> {
+  @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
+  id: number;
+
   @Column({ type: DataType.INTEGER })
   public B: number;
 

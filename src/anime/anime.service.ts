@@ -23,7 +23,8 @@ export class AnimeService {
     private _AnimeToGenreModel: typeof _AnimeToGenre,
   ) {}
   private async setRating(anime: Anime, material_data: MaterialData) {
-    const { imdb_rating, kinopoisk_rating, shikimori_rating } = material_data;
+    const { imdb_rating, kinopoisk_rating, shikimori_rating } =
+      material_data || {};
 
     const definedRatings = [
       imdb_rating,

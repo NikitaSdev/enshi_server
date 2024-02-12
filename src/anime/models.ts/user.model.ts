@@ -21,10 +21,20 @@ export class User extends Model<User> {
   @Index('user_login_index')
   @Column({ type: DataType.STRING, unique: true })
   login: string;
-  @Column({ type: DataType.STRING, allowNull: true })
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    defaultValue: '/uploads/avatars/default.jpg',
+  })
   avatar_url: string;
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  mintues_watched: number;
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    defaultValue: '/uploads/wallpapers/default.jpg',
+  })
+  wallpaper_url: string;
+  @Column({ type: DataType.INTEGER, allowNull: true, defaultValue: 0 })
+  minutes_watched: number;
   createdAt: Date;
   updatedAt: Date;
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
