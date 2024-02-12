@@ -5,8 +5,8 @@ import { AnimeService } from './anime.service';
 export class AnimeController {
   constructor(private readonly animeService: AnimeService) {}
 
-  @Post()
-  public async parseAnime() {
-    await this.animeService.parseAnime();
-  }
+  // @Post()
+  // public async parseAnime() {
+  //   await this.animeService.parseAnime();
+  // }
 }
